@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   FaLinkedin, FaInstagram, FaEnvelope, FaTimes,
   FaChartLine, FaUsers, FaPenFancy, FaRocket,
-  FaBars, FaArrowUp
+  FaBars, FaArrowUp, FaComments, FaPaperPlane
 } from "react-icons/fa";
 import Image from "next/image";
 
@@ -14,13 +14,18 @@ export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("hero");
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{text: string, isUser: boolean}[]>([
+    { text: "Xin chào! Tôi là chatbot hỗ trợ của An Thuy Duong. Tôi có thể giúp gì cho bạn?", isUser: false }
+  ]);
+  const [chatInput, setChatInput] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
 
       // Update active section
-      const sections = ["hero", "about", "experience", "portfolio", "case-studies", "testimonials", "services", "contact"];
+      const sections = ["hero", "about", "experience", "portfolio", "case-studies", "testimonials", "faqs", "services", "contact"];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -43,6 +48,34 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput;
+    setChatMessages(prev => [...prev, { text: userMessage, isUser: true }]);
+    setChatInput("");
+
+    // Auto-response logic
+    setTimeout(() => {
+      let botResponse = "Cảm ơn bạn đã liên hệ! ";
+      
+      if (userMessage.toLowerCase().includes("portfolio") || userMessage.toLowerCase().includes("dự án")) {
+        botResponse += "Bạn có thể xem các dự án của tôi trong section Portfolio phía trên. Tôi có kinh nghiệm về Social Media Marketing, Content Strategy và Community Engagement.";
+      } else if (userMessage.toLowerCase().includes("liên hệ") || userMessage.toLowerCase().includes("contact")) {
+        botResponse += "Bạn có thể liên hệ với tôi qua email: anduong2902@gmail.com hoặc phone: (253) 231-6358. Hoặc kéo xuống section Contact để gửi message!";
+      } else if (userMessage.toLowerCase().includes("kinh nghiệm") || userMessage.toLowerCase().includes("experience")) {
+        botResponse += "Tôi hiện đang làm Social Media Coordinator tại Sorcea và có kinh nghiệm tại Influki, Power of Patients và Chinatown-ID BIA. Xem chi tiết trong section Experience!";
+      } else if (userMessage.toLowerCase().includes("học vấn") || userMessage.toLowerCase().includes("education")) {
+        botResponse += "Tôi có bằng Thạc sĩ Corporate and Organizational Communication từ Northeastern University (2024) và BA in Communication and Media từ Seattle University (2021, Magna Cum Laude).";
+      } else {
+        botResponse += "Để biết thêm thông tin, bạn có thể scroll xuống các sections hoặc liên hệ trực tiếp với tôi qua email: anduong2902@gmail.com";
+      }
+
+      setChatMessages(prev => [...prev, { text: botResponse, isUser: false }]);
+    }, 1000);
+  };
+
   const menuItems = [
     { href: "#hero", label: "Trang chủ" },
     { href: "#about", label: "Về tôi" },
@@ -50,6 +83,7 @@ export default function Home() {
     { href: "#portfolio", label: "Portfolio" },
     { href: "#case-studies", label: "Case Studies" },
     { href: "#testimonials", label: "Đánh giá" },
+    { href: "#faqs", label: "FAQs" },
     { href: "#services", label: "Dịch vụ" },
     { href: "#contact", label: "Liên hệ" },
   ];
@@ -148,28 +182,46 @@ export default function Home() {
 
   const caseStudies = [
     {
-      title: "Chinatown-ID BIA: Community Engagement & Event Growth",
-      problem: "Khu phố Chinatown-International District cần tăng sự tham gia của cộng đồng vào các sự kiện và hoạt động địa phương, đồng thời xây dựng sự hiện diện trực tuyến mạnh mẽ hơn.",
-      solution: "Phát triển chiến lược content Instagram tập trung vào việc spotlight các doanh nghiệp địa phương và sự kiện. Thực hiện outreach có hệ thống với các doanh nghiệp trước và sau sự kiện. Giám sát và tương tác tích cực với comments, messages và tags để xây dựng cộng đồng trực tuyến.",
+      title: "Husky Communications → Husky Media Lab: Rebrand & Website Redesign",
+      background: "Originally launched in 2020 as Husky Communications to support the 'Virtual PR Firm' concept, the site showcased PR-focused student work. Over time, the scope broadened to include digital communication across multiple programs. Confusion with a similarly named student group and the outdated branding created the need for a new identity and updated website.",
+      problem: "The existing Husky Communications brand and website no longer reflected the agency's broader digital communication focus or differentiated it from other student groups. A rebrand and website redesign were needed to modernize its identity and better highlight student expertise.",
+      solution: "A team of students conducted a branding analysis and proposed a new name (Husky Media Lab), logo, and brand focus. The team also restructured and redesigned the website to align with the refreshed identity and clearly communicate the agency's mission of experiential learning and professional development.",
       results: [
-        "Tăng 15% tỷ lệ tham gia sự kiện",
-        "Nâng cao nhận thức về khu phố trong cộng đồng",
-        "Xây dựng mối quan hệ chặt chẽ với doanh nghiệp địa phương",
-        "Tạo sự hiện diện trực tuyến gắn kết và tích cực"
+        "Successfully rebranded from Husky Communications to Husky Media Lab",
+        "Developed new brand identity including name, logo, and messaging",
+        "Redesigned website with improved UX and clear mission communication",
+        "Positioned as a leading student-run digital communication agency"
       ],
-      image: "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=800"
+      tags: ["Branding", "Web Design", "Strategy"],
+      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800"
     },
     {
-      title: "Husky Communicators: Website Redesign & Rebranding",
-      problem: "Tổ chức cần tái định vị thương hiệu và ra mắt website mới sau khi rebranding, đảm bảo sự chuyển đổi mượt mà và tạo ấn tượng mạnh mẽ với cộng đồng.",
-      solution: "Nghiên cứu xu hướng ngành và vị thế cạnh tranh. Đóng góp vào phát triển brand identity mới bao gồm tên, logo và messaging. Phát triển kế hoạch launch quảng bá toàn diện và phối hợp với các team (website, social media, event) để đảm bảo thực thi liền mạch.",
+      title: "Husky Media Lab: Launch Strategy & Promotional Campaign",
+      background: "Following the rebrand and redesign of Husky Communications into Husky Media Lab, a launch strategy was required to successfully roll out the new identity and website.",
+      problem: "Without a structured promotional plan, the rebrand risked low visibility among key stakeholders, including students, faculty, and prospective partners.",
+      solution: "Developed a comprehensive promotional launch strategy, including a rollout timeline and social media samples. The plan provided a roadmap to maximize awareness, drive engagement, and position Husky Media Lab as a leading student-run digital communication agency.",
       results: [
-        "Ra mắt website thành công với UX được cải thiện",
-        "Phối hợp hiệu quả giữa các team chức năng",
-        "Tạo brand identity mới nhất quán và chuyên nghiệp",
-        "Tổ chức launch party kèm chiến lược truyền thông đa kênh"
+        "Created structured rollout timeline for launch execution",
+        "Developed social media content samples for multi-platform promotion",
+        "Positioned Husky Media Lab for maximum stakeholder awareness",
+        "Established framework for ongoing brand engagement"
       ],
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800"
+      tags: ["Social Media", "Strategy", "Launch Campaign"],
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800"
+    },
+    {
+      title: "Law Office of Saikon Gbehan, LLC: Social Media Communication Strategy",
+      background: "The Law Office of Saikon Gbehan, LLC, a boutique firm in Providence, Rhode Island, specializes in personal injury, immigration law, and civil litigation. The firm wanted to strengthen its social media presence to better connect with individuals and businesses seeking legal representation.",
+      problem: "The firm's existing social media activities lacked consistency and effective audience engagement. A strategy was needed to increase reach and build stronger connections with target clients.",
+      solution: "Conducted a comprehensive assessment of all social media channels, identifying gaps and opportunities. Based on findings, developed a tailored communication strategy with actionable recommendations to improve visibility, engagement, and overall channel effectiveness.",
+      results: [
+        "Completed comprehensive social media audit across all channels",
+        "Identified key gaps and growth opportunities",
+        "Delivered actionable strategy to improve consistency and engagement",
+        "Provided roadmap for strengthening client connections"
+      ],
+      tags: ["Social Media", "Strategy", "Content Planning"],
+      image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800"
     },
   ];
 
@@ -213,6 +265,37 @@ export default function Home() {
       features: ["Market research", "Content planning", "Brand positioning", "Multi-platform content creation"],
       icon: <FaRocket className="text-4xl" />
     },
+  ];
+
+  const faqs = [
+    {
+      question: "Who are you?",
+      answer: "I'm An, a communications professional with a master's in Corporate and Organizational Communication from Northeastern University. With nearly two years of experience in social media marketing, I help organizations craft authentic messages that connect with their audience, drive engagement, and strengthen brand identity."
+    },
+    {
+      question: "How did your journey in communications begin?",
+      answer: "My journey began during undergrad while interning with nonprofits in Seattle, where I discovered the power of social media to connect communities. Since then, I've focused on social media, content creation, and campaigns that drive meaningful engagement and positive change."
+    },
+    {
+      question: "How do you approach communication in your work?",
+      answer: "I strive to create content that resonates with diverse audiences and coordinate cross-platform campaigns to strengthen brand messages. I believe the most effective communications are authentic, creative, and adaptable, fostering connections that leave a lasting impact."
+    },
+    {
+      question: "What unique skills do you bring to the table?",
+      answer: "I combine strategic thinking with hands-on execution, including growing engagement on social media (e.g., Instagram, LinkedIn, etc.), developing content strategies, and navigating cultural nuances to communicate effectively across diverse audiences."
+    },
+    {
+      question: "What's your dream project or role?",
+      answer: "I aspire to be involved in projects that combine storytelling and strategy, using communication to drive meaningful, mission-focused impact."
+    },
+    {
+      question: "What do you enjoy doing outside of work?",
+      answer: "I have a bunch of side quests I'm exploring, from baking and playing squash to reading and hitting the gym. I'm all about trying new things and discovering what I enjoy!"
+    },
+    {
+      question: "A fun fact about you:",
+      answer: "I'm a leap year baby, which means my birthday only comes around once every four years—making me feel extra special (and a little younger than everyone else my age 😌)."
+    }
   ];
 
   const blogPosts = [
@@ -352,10 +435,13 @@ export default function Home() {
             >
               <div className="relative w-full aspect-square max-w-lg mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-br from-pastel-pink to-pastel-beige rounded-full opacity-20 blur-3xl"></div>
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600"
                   alt="Profile"
+                  width={600}
+                  height={600}
                   className="relative w-full h-full object-cover rounded-3xl shadow-2xl"
+                  priority
                 />
               </div>
             </motion.div>
@@ -375,18 +461,28 @@ export default function Home() {
           >
             <h2 className="heading-secondary mb-6">Về tôi</h2>
             <p className="text-body mb-4">
-              Xin chào, tôi là <strong>An Thuy Duong</strong> – một Social Media Strategist và Content Creator 
-              với niềm đam mê xây dựng cộng đồng và tạo ra những chiến dịch marketing có tác động thực sự.
+              Xin chào, tôi là <strong>An Thuy Duong</strong> – A globally-minded communicator passionate about 
+              social media and content creation, committed to fostering meaningful connections and creating content 
+              that drives engagement and impact.
             </p>
             <p className="text-body mb-4">
-              Với bằng Thạc sĩ về Corporate and Organizational Communication từ Northeastern University và 
-              kinh nghiệm làm việc với các tổ chức đa dạng, tôi kết hợp phân tích dữ liệu với sáng tạo nội dung 
-              để mang lại kết quả đo lường được. Từ việc tăng 15% tham gia sự kiện cho cộng đồng địa phương đến 
-              phát triển chiến lược content đa nền tảng, tôi tin rằng marketing hiệu quả bắt đầu từ việc thấu hiểu 
-              khách hàng và cộng đồng.
+              My journey began during undergrad while interning with nonprofits in Seattle, where I discovered the 
+              power of social media to connect communities. Since then, I&apos;ve focused on social media, content creation, 
+              and campaigns that drive meaningful engagement and positive change. With a master&apos;s in Corporate and 
+              Organizational Communication from Northeastern University and nearly two years of experience in social 
+              media marketing, I help organizations craft authentic messages that connect with their audience, drive 
+              engagement, and strengthen brand identity.
             </p>
             <p className="text-body mb-4">
-              Tôi thành thạo tiếng Anh và tiếng Việt, giúp tôi kết nối với đa dạng đối tượng và thị trường.
+              I strive to create content that resonates with diverse audiences and coordinate cross-platform campaigns 
+              to strengthen brand messages. I believe the most effective communications are authentic, creative, and 
+              adaptable, fostering connections that leave a lasting impact. I combine strategic thinking with hands-on 
+              execution, growing engagement on social media and navigating cultural nuances to communicate effectively 
+              across diverse audiences.
+            </p>
+            <p className="text-body">
+              <strong>Fun fact:</strong> I&apos;m a leap year baby, which means my birthday only comes around once every 
+              four years—making me feel extra special (and a little younger than everyone else my age 😌).
             </p>
           </motion.div>
 
@@ -560,9 +656,11 @@ export default function Home() {
                 onClick={() => setLightboxImage(item.image)}
               >
                 <div className="relative h-64 overflow-hidden">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
+                    width={800}
+                    height={400}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                   <div className="absolute top-4 right-4 bg-pastel-pink px-4 py-2 rounded-full text-sm font-medium">
@@ -636,32 +734,51 @@ export default function Home() {
               >
                 <div className="grid lg:grid-cols-2 gap-0">
                   <div className="relative h-64 lg:h-auto">
-                    <img
+                    <Image
                       src={study.image}
                       alt={study.title}
+                      width={800}
+                      height={600}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-8 lg:p-12">
-                    <h3 className="heading-tertiary mb-6">{study.title}</h3>
+                    <h3 className="heading-tertiary mb-4">{study.title}</h3>
                     
+                    {study.tags && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {study.tags.map((tag, i) => (
+                          <span key={i} className="px-3 py-1 bg-pastel-pink/30 text-warm-gray text-xs rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {study.background && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold text-pastel-pink mb-2">Background</h4>
+                        <p className="text-warm-gray/80 text-sm">{study.background}</p>
+                      </div>
+                    )}
+
                     <div className="mb-6">
-                      <h4 className="font-semibold text-pastel-pink mb-2">Vấn đề</h4>
-                      <p className="text-warm-gray/80">{study.problem}</p>
+                      <h4 className="font-semibold text-pastel-pink mb-2">Challenge</h4>
+                      <p className="text-warm-gray/80 text-sm">{study.problem}</p>
                     </div>
 
                     <div className="mb-6">
-                      <h4 className="font-semibold text-pastel-pink mb-2">Giải pháp</h4>
-                      <p className="text-warm-gray/80">{study.solution}</p>
+                      <h4 className="font-semibold text-pastel-pink mb-2">Approach</h4>
+                      <p className="text-warm-gray/80 text-sm">{study.solution}</p>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-pastel-pink mb-3">Kết quả</h4>
+                      <h4 className="font-semibold text-pastel-pink mb-3">Results</h4>
                       <ul className="space-y-2">
                         {study.results.map((result, i) => (
                           <li key={i} className="flex items-start gap-2">
                             <span className="text-pastel-pink mt-1">✓</span>
-                            <span className="text-warm-gray/80">{result}</span>
+                            <span className="text-warm-gray/80 text-sm">{result}</span>
                           </li>
                         ))}
                       </ul>
@@ -700,9 +817,11 @@ export default function Home() {
                 className="card p-8"
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <img
+                  <Image
                     src={testimonial.avatar}
                     alt={testimonial.name}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 rounded-full object-cover"
                   />
                   <div>
@@ -710,7 +829,44 @@ export default function Home() {
                     <p className="text-sm text-warm-gray/60">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-warm-gray/80 italic">"{testimonial.text}"</p>
+                <p className="text-warm-gray/80 italic">&ldquo;{testimonial.text}&rdquo;</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section id="faqs" className="section-padding bg-gradient-to-br from-pastel-beige/30 to-white">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="heading-secondary mb-4">FAQs</h2>
+            <p className="text-body max-w-2xl mx-auto">
+              Get to know me better through these frequently asked questions
+            </p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="card p-6 md:p-8"
+              >
+                <h3 className="text-xl font-playfair font-semibold text-warm-gray mb-3">
+                  {faq.question}
+                </h3>
+                <p className="text-warm-gray/80 leading-relaxed">
+                  {faq.answer}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -798,9 +954,11 @@ export default function Home() {
                 className="card cursor-pointer"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src={post.image}
                     alt={post.title}
+                    width={600}
+                    height={400}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
@@ -928,6 +1086,100 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Chatbot Widget */}
+      <AnimatePresence>
+        {isChatOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 100, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 100, scale: 0.8 }}
+            transition={{ type: "spring", damping: 25 }}
+            className="fixed bottom-24 right-8 w-96 max-w-[calc(100vw-4rem)] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
+          >
+            {/* Chat Header */}
+            <div className="bg-gradient-to-r from-pastel-pink to-pastel-beige p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                  <FaComments className="text-pastel-pink text-xl" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-warm-gray">Chat với An</h3>
+                  <p className="text-xs text-warm-gray/70">Online</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="text-warm-gray hover:text-warm-gray/70 transition-colors"
+              >
+                <FaTimes className="text-xl" />
+              </button>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="h-96 overflow-y-auto p-4 bg-pastel-beige/10">
+              {chatMessages.map((msg, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`mb-4 flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-3 rounded-2xl ${
+                      msg.isUser
+                        ? 'bg-pastel-pink text-warm-gray'
+                        : 'bg-white text-warm-gray shadow-md'
+                    }`}
+                  >
+                    <p className="text-sm">{msg.text}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Chat Input */}
+            <form onSubmit={handleChatSubmit} className="p-4 bg-white border-t border-pastel-pink/20">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Nhập tin nhắn..."
+                  className="flex-1 px-4 py-2 border border-pastel-pink/30 rounded-full focus:outline-none focus:border-pastel-pink transition-colors text-sm"
+                />
+                <button
+                  type="submit"
+                  className="bg-pastel-pink text-warm-gray p-2 rounded-full hover:bg-pastel-pink/80 transition-all hover:scale-105 active:scale-95"
+                >
+                  <FaPaperPlane className="text-lg" />
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chatbot Toggle Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 1, type: "spring" }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed bottom-8 right-24 bg-gradient-to-r from-pastel-pink to-pastel-beige text-warm-gray p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-40"
+      >
+        {isChatOpen ? <FaTimes className="text-2xl" /> : <FaComments className="text-2xl" />}
+        {!isChatOpen && (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
+          />
+        )}
+      </motion.button>
 
       {/* Scroll to Top Button */}
       <AnimatePresence>
